@@ -1,11 +1,17 @@
+// create_new_password_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../repository/reset_password_repository.dart';
 
 class CreateNewPasswordController extends GetxController {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  void resetPassword() {
+  final ResetPasswordRepository repository = Get.find();
+
+  var isLoading = false.obs;
+
+  void resetPassword() async {
     if (passwordController.text.isEmpty || confirmPasswordController.text.isEmpty) {
       Get.snackbar("Error", "Please fill all fields", snackPosition: SnackPosition.BOTTOM);
       return;
@@ -19,8 +25,20 @@ class CreateNewPasswordController extends GetxController {
       return;
     }
 
-    Get.snackbar("Success", "Password reset successfully!", snackPosition: SnackPosition.BOTTOM);
-    Get.offAllNamed('/login');
+    try {
+      isLoading.value = true;
+      bool success = await repository.resetPassword(passwordController.text);
+      if (success) {
+        Get.snackbar("Success", "Password reset successfully!", snackPosition: SnackPosition.BOTTOM);
+        Get.offAllNamed('/login'); 
+      } else {
+        Get.snackbar("Error", "Failed to reset password. Please try again.", snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   @override

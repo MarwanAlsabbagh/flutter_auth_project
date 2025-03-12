@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../repository/send_instructions_repository.dart';
 import '../viwe/pages/check_emai_page.dart';
 
 
 class SendInstructionsController extends GetxController {
   final TextEditingController emailController = TextEditingController();
-  //final AuthRepository authRepository = AuthRepository();
+  final SendInstructionsRepository repository = Get.find();
 
   var isLoading = false.obs;
 
@@ -17,8 +18,7 @@ class SendInstructionsController extends GetxController {
 
     try {
       isLoading.value = true;
-      //bool success = await authRepository.sendResetInstructions(emailController.text);
-bool success = true;
+      bool success = await repository.sendResetInstructions(emailController.text);
       if (success) {
         Get.to(() => CheckEmailView());
       } else {

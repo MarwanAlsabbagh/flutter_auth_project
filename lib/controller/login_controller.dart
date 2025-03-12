@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../repository/login_repository.dart';
 
 class LoginController extends GetxController {
+  final LoginRepository authRepository = Get.find<LoginRepository>();
+
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   var isLoading = false.obs;
@@ -13,10 +16,17 @@ class LoginController extends GetxController {
     }
 
     isLoading.value = true;
-    await Future.delayed(Duration(seconds: 2));
+    try {
+      bool success = await authRepository.login(emailController.text, passwordController.text);
+      if (success) {
+        Get.snackbar("Success", "Login successful", snackPosition: SnackPosition.BOTTOM);
+      } else {
+        Get.snackbar("Error", "Invalid credentials", snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+    }
     isLoading.value = false;
-
-    Get.snackbar("Success", "Login successful", snackPosition: SnackPosition.BOTTOM);
   }
 
   @override

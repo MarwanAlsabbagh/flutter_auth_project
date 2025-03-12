@@ -1,15 +1,16 @@
-import 'package:authapp/utils/globall_color.dart';
 import 'package:authapp/viwe/pages/regester_page.dart';
 import 'package:authapp/viwe/pages/send_instructions.dart';
-import 'package:authapp/viwe/wedgit/eleveted_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controller/login_controller.dart';
+import '../../utils/globall_color.dart';
+import '../wedgit/eleveted_button.dart';
 import '../wedgit/text_form_wegit.dart';
+
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
-  final LoginController controller = Get.put(LoginController());
+  final LoginController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,7 @@ class LoginPage extends StatelessWidget {
                           color: GlobalColors.textColor,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-            
+
                         ),
                       ),
                     ),
@@ -111,3 +112,4 @@ class LoginPage extends StatelessWidget {
     );
   }
 }
+

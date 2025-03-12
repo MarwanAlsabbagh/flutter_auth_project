@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../controller/register_controller.dart';
 import '../../utils/globall_color.dart';
@@ -53,11 +54,11 @@ class ImagePickerWidget extends StatelessWidget {
                   builder: (BuildContext context) {
                     return DialogWidget(
                       onCameraTap: () {
-                        controller.pickImageFromCamera();
+                        controller.pickImage(ImageSource.camera);
                         Get.back();
                       },
                       onGalleryTap: () {
-                        controller.pickImageFromGallery();
+                        controller.pickImage(ImageSource.gallery);
                         Get.back();
                       },
                       cameraText: "قم بأختيار صورة من الكاميرا",

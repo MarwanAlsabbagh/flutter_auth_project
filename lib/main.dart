@@ -1,4 +1,5 @@
 import 'package:authapp/utils/binding/intial_binding.dart';
+import 'package:authapp/utils/binding/login_binding.dart';
 import 'package:authapp/viwe/pages/check_emai_page.dart';
 import 'package:authapp/viwe/pages/create_new_password_page.dart';
 import 'package:authapp/viwe/pages/login_page.dart';

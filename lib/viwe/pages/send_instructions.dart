@@ -8,7 +8,7 @@ import '../wedgit/text_form_wegit.dart';
 class SendInstructionsView extends StatelessWidget {
   SendInstructionsView({Key? key}) : super(key: key);
 
-  final SendInstructionsController controller = Get.put(SendInstructionsController());
+  final SendInstructionsController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {

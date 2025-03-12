@@ -1,3 +1,4 @@
+import 'dart:io';
 
 class User {
   String firstName;
@@ -10,8 +11,8 @@ class User {
   String city;
   String gender;
   String address;
-  String? frontNationalID;
-  String? backNationalID;
+  File? frontNationalID;  // ✅ تغييرها إلى File?
+  File? backNationalID;   // ✅ تغييرها إلى File?
 
   User({
     required this.firstName,
@@ -28,23 +29,7 @@ class User {
     this.backNationalID,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      firstName: json['firstName'],
-      lastName: json['lastName'],
-      email: json['email'],
-      nationalID: json['nationalID'],
-      phone: json['phone'],
-      password: json['password'],
-      confirmPassword: json['confirmPassword'],
-      city: json['city'],
-      gender: json['gender'],
-      address: json['address'],
-      frontNationalID: json['frontNationalID'],
-      backNationalID: json['backNationalID'],
-    );
-  }
-
+  /// 🔹 تحويل كائن `User` إلى `Map<String, dynamic>` (لإرساله إلى API)
   Map<String, dynamic> toJson() {
     return {
       'firstName': firstName,
@@ -57,8 +42,26 @@ class User {
       'city': city,
       'gender': gender,
       'address': address,
-      'frontNationalID': frontNationalID,
-      'backNationalID': backNationalID,
+      'frontNationalID': frontNationalID?.path,  // ✅ إرسال مسار الصورة بدلاً من الملف
+      'backNationalID': backNationalID?.path,    // ✅ إرسال مسار الصورة بدلاً من الملف
     };
+  }
+
+  /// 🔹 تحويل `Map<String, dynamic>` إلى `User`
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      firstName: json['firstName'],
+      lastName: json['lastName'],
+      email: json['email'],
+      nationalID: json['nationalID'],
+      phone: json['phone'],
+      password: json['password'],
+      confirmPassword: json['confirmPassword'],
+      city: json['city'],
+      gender: json['gender'],
+      address: json['address'],
+      frontNationalID: json['frontNationalID'] != null ? File(json['frontNationalID']) : null,
+      backNationalID: json['backNationalID'] != null ? File(json['backNationalID']) : null,
+    );
   }
 }

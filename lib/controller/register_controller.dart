@@ -2,8 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import '../model/user_model.dart';
+import '../repository/rigister_reposetory.dart';
 
 class RegisterController extends GetxController {
+  final RegisterRepository registerRepository = Get.find<RegisterRepository>();
+
   var firstNameController = TextEditingController();
   var lastNameController = TextEditingController();
   var emailController = TextEditingController();
@@ -17,27 +21,19 @@ class RegisterController extends GetxController {
   var selectedGender = Rxn<String>();
   var personImage = Rxn<File>();
   var frontNationalID = Rxn<File>();
-  var backNationalID = Rxn<File>();  // ✅ تأكيد أنه Rxn<File> وليس Rx<String?>
+  var backNationalID = Rxn<File>();
 
   final ImagePicker _picker = ImagePicker();
 
-  /// 🔹 اختيار الصورة من الكاميرا
-  Future<void> pickImageFromCamera() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+  // 📸 اختيار الصورة الشخصية
+  Future<void> pickImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
       personImage.value = File(pickedFile.path);
     }
   }
 
-  /// 🔹 اختيار الصورة من المعرض
-  Future<void> pickImageFromGallery() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      personImage.value = File(pickedFile.path);
-    }
-  }
-
-  /// 🔹 اختيار الهوية الأمامية
+  // 📸 اختيار الهوية الأمامية
   Future<void> pickFrontNationalID({required ImageSource source}) async {
     final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
@@ -45,7 +41,7 @@ class RegisterController extends GetxController {
     }
   }
 
-  /// 🔹 اختيار الهوية الخلفية
+  // 📸 اختيار الهوية الخلفية
   Future<void> pickBackNationalID({required ImageSource source}) async {
     final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
@@ -53,7 +49,9 @@ class RegisterController extends GetxController {
     }
   }
 
-  void register() {
+  // 📝 تنفيذ عملية التسجيل
+  Future<void> register() async {
+    // التأكد من أن جميع الحقول المطلوبة قد تم تعبئتها
     if (firstNameController.text.isEmpty ||
         lastNameController.text.isEmpty ||
         emailController.text.isEmpty ||
@@ -62,21 +60,50 @@ class RegisterController extends GetxController {
         passwordController.text.isEmpty ||
         confirmPasswordController.text.isEmpty ||
         selectedCity.value == null ||
-        selectedGender.value == null) {
-      Get.snackbar("Error", "Please fill all required fields", snackPosition: SnackPosition.BOTTOM);
+        selectedGender.value == null ||
+        personImage.value == null || // التأكد من أن الصورة الشخصية تم اختيارها
+        frontNationalID.value == null || // التأكد من أن الهوية الأمامية تم رفعها
+        backNationalID.value == null) { // التأكد من أن الهوية الخلفية تم رفعها
+      Get.snackbar("Error", "Please fill all required fields and upload all images", snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
+    // التأكد من أن كلمة المرور وتأكيد كلمة المرور متطابقتان
     if (passwordController.text != confirmPasswordController.text) {
       Get.snackbar("Error", "Passwords do not match", snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
-    Get.snackbar("Success", "Account created successfully!", snackPosition: SnackPosition.BOTTOM);
+    var user = User(
+      firstName: firstNameController.text,
+      lastName: lastNameController.text,
+      email: emailController.text,
+      nationalID: nationalIDController.text,
+      phone: phoneController.text,
+      password: passwordController.text,
+      confirmPassword: confirmPasswordController.text,
+      city: selectedCity.value!,
+      gender: selectedGender.value!,
+      address: locationCityController.text,
+      frontNationalID: frontNationalID.value,
+      backNationalID: backNationalID.value,
+    );
+
+    try {
+      bool success = await registerRepository.register(user);
+      if (success) {
+        Get.snackbar("Success", "Account created successfully!", snackPosition: SnackPosition.BOTTOM);
+      } else {
+        Get.snackbar("Error", "Registration failed", snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+    }
   }
 
   @override
   void onClose() {
+    // تحرير المتحكمات بعد الاستخدام
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
